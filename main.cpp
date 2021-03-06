@@ -51,7 +51,7 @@ void * child(void *c) {
 
             int length = strlen(buf);
             for(int i=0 ; i<length ; i++) {
-                char *s = m.fromAsc(buf[i]);
+                const char *s = m.fromAsc(buf[i]);
                 if(!s[0]) continue;
                 printf("child playing %s\n", (char *)s);
 

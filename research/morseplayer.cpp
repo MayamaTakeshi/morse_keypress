@@ -200,9 +200,3 @@ error:
 }
 
 
-void MorsePlayer::set_freq(int frequency)
-{
-    data.up_count = 0; // do not stop!
-    data.freq = frequency;
-}
-

@@ -44,5 +44,4 @@ public:
 
     void add(int samples, int freq);
     int consume(void *outputBuffer, unsigned long framesPerBuffer);
-    void set_freq(int);
 };
