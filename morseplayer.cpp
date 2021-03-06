@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <math.h>
-#include <stdint.h>
 #include <unistd.h> // for usleep()
 
 #include <stdexcept>
@@ -30,18 +29,6 @@ template <typename Ret, typename... Params>
 std::function<Ret(Params...)> Callback<Ret(Params...)>::func;
 
 
-typedef struct
-{
-    uint32_t total_count;
-    uint32_t up_count;
-
-    uint32_t counter;
-    uint32_t prev_freq;
-    uint32_t freq;
-} paTestData;
-
-static paTestData data;
-
 int MorsePlayer::paCallback(const void *inputBuffer, void *outputBuffer,
                            unsigned long framesPerBuffer,
                            const PaStreamCallbackTimeInfo* timeInfo,
@@ -49,10 +36,9 @@ int MorsePlayer::paCallback(const void *inputBuffer, void *outputBuffer,
                            void *userData )
 {
     //printf("paCallback\n");
-    paTestData *data = (paTestData*)userData;
     uint8_t *out = (uint8_t*)outputBuffer;
     unsigned long i;
-    uint32_t freq = data->freq;
+    uint32_t freq = data.freq;
 
     (void) timeInfo; /* Prevent unused variable warnings. */
     (void) statusFlags;
@@ -60,31 +46,31 @@ int MorsePlayer::paCallback(const void *inputBuffer, void *outputBuffer,
 
     for( i=0; i<framesPerBuffer; i++ )
     {
-        if(data->up_count > 0 && data->total_count == data->up_count) {
+        if(data.up_count > 0 && data.total_count == data.up_count) {
             *out++ = 0x00;
             continue;
         }
-        data->total_count++;
+        data.total_count++;
 
-        if(freq != data->prev_freq) {
-            data->counter = 0;
+        if(freq != data.prev_freq) {
+            data.counter = 0;
         }
 
         if(freq) {
             int overflow_max = SAMPLE_RATE / freq;
-            uint32_t data_cnt = data->counter % overflow_max;
+            uint32_t data_cnt = data.counter % overflow_max;
             if(data_cnt > overflow_max/2)
                 *out++ = 0xff;
             else {
                 *out++ = 0x00;
             }
-            data->counter++;
+            data.counter++;
         }
         else {
-            data->counter = 0;
+            data.counter = 0;
             *out++ = 0;
         }
-        data->prev_freq = freq;
+        data.prev_freq = freq;
     }
 
     return paContinue;
@@ -176,7 +162,7 @@ MorsePlayer::MorsePlayer() {
         FRAMES_PER_BUFFER,
         paClipOff,      /* we won't output out of range samples so don't bother clipping them */
         c_func,
-        (void*)&data);
+        NULL);
 
     if( err != paNoError ) goto error;
 

@@ -1,4 +1,5 @@
 #include "portaudio.h"
+#include <stdint.h>
 
 struct Item {
     bool in_use;
@@ -9,10 +10,22 @@ struct Item {
 
 #define MAX_ITEMS 256
 
+typedef struct
+{
+    uint32_t total_count;
+    uint32_t up_count;
+
+    uint32_t counter;
+    uint32_t prev_freq;
+    uint32_t freq;
+} paData;
+
 
 class MorsePlayer {
 private:
     PaStream *stream;
+    paData data;
+
     Item *first = NULL;
     Item *insertion_pointer;
     Item *consumption_pointer;
