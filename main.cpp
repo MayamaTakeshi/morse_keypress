@@ -7,7 +7,7 @@
 
 #include "keywatcher.hpp"
 #include "morse.hpp"
-#include "morseplayer.hpp"
+#include "audioplayer.hpp"
 
 
 int wait_n_read(int fd, char* buf, int szBuf) {
@@ -37,8 +37,8 @@ void * child(void *c) {
 
     Morse m = Morse();
 
-    MorsePlayer mp = MorsePlayer();
-    mp.set_freq(0);
+    AudioPlayer ap = AudioPlayer();
+    ap.set_freq(0);
 
     char buf[256];
     while(1) {
@@ -57,7 +57,7 @@ void * child(void *c) {
 
                 int siglength = strlen(s);
                 for(int j=0 ; j<siglength ; j++) {
-                    mp.set_freq(FREQ);
+                    ap.set_freq(FREQ);
 
                     if(s[j] == '.') {
                         msleep(DOT_DURATION);                    
@@ -65,7 +65,7 @@ void * child(void *c) {
                         msleep(DOT_DURATION * 3);                    
                     }
 
-                    mp.set_freq(0);
+                    ap.set_freq(0);
                     if(j < siglength-1) {
                         //interval between dots and dashes in the same letter
                         msleep(DOT_DURATION);
