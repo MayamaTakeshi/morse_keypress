@@ -44,15 +44,16 @@ int AudioPlayer::paCallback(const void *inputBuffer, void *outputBuffer,
     (void) statusFlags;
     (void) inputBuffer;
 
+    if(freq == 0) {
+        for(i=0; i<framesPerBuffer; i++ ) {
+            *out++ = 0;
+            *out++ = 0;
+        }
+        return paContinue;
+    }
+
     for( i=0; i<framesPerBuffer; i++ )
     {
-        if(data.freq == 0) {
-            *out++ = 0;
-            *out++ = 0;
-            continue;
-        }
-        data.total_count++;
-
         int overflow_max = SAMPLE_RATE / freq;
         uint32_t data_cnt = data.counter % overflow_max;
         if(data_cnt > overflow_max/2) {
