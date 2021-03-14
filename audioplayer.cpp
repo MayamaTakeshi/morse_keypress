@@ -36,7 +36,7 @@ int AudioPlayer::paCallback(const void *inputBuffer, void *outputBuffer,
                            void *userData )
 {
     //printf("paCallback\n");
-    uint8_t *out = (uint8_t*)outputBuffer;
+    float *out = (float*)outputBuffer;
     unsigned long i;
     uint32_t freq = data.freq;
 
@@ -46,31 +46,23 @@ int AudioPlayer::paCallback(const void *inputBuffer, void *outputBuffer,
 
     for( i=0; i<framesPerBuffer; i++ )
     {
-        if(data.up_count > 0 && data.total_count == data.up_count) {
-            *out++ = 0x00;
+        if(data.freq == 0) {
+            *out++ = 0;
+            *out++ = 0;
             continue;
         }
         data.total_count++;
 
-        if(freq != data.prev_freq) {
-            data.counter = 0;
+        int overflow_max = SAMPLE_RATE / freq;
+        uint32_t data_cnt = data.counter % overflow_max;
+        if(data_cnt > overflow_max/2) {
+            *out++ = 0xff;
+            *out++ = 0xff;
+        } else {
+            *out++ = 0x00;
+            *out++ = 0x00;
         }
-
-        if(freq) {
-            int overflow_max = SAMPLE_RATE / freq;
-            uint32_t data_cnt = data.counter % overflow_max;
-            if(data_cnt > overflow_max/2)
-                *out++ = 0xff;
-            else {
-                *out++ = 0x00;
-            }
-            data.counter++;
-        }
-        else {
-            data.counter = 0;
-            *out++ = 0;
-        }
-        data.prev_freq = freq;
+        data.counter++;
     }
 
     return paContinue;
@@ -92,8 +84,8 @@ AudioPlayer::AudioPlayer() {
     if( err != paNoError ) goto error;
 
     outputParameters.device = Pa_GetDefaultOutputDevice(); /* default output device */
-    outputParameters.channelCount = 1;       /* stereo output */
-    outputParameters.sampleFormat = paUInt8; /* 32 bit floating point output */
+    outputParameters.channelCount = 2;       /* stereo output */
+    outputParameters.sampleFormat = paFloat32; /* 32 bit floating point output */
     outputParameters.suggestedLatency = Pa_GetDeviceInfo( outputParameters.device )->defaultLowOutputLatency;
     outputParameters.hostApiSpecificStreamInfo = NULL;
 
