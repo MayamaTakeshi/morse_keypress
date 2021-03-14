@@ -33,7 +33,7 @@ void msleep(int d){
 
 void * child(void *c) {
     int chan = *(int*)c;
-    printf("child chan=%i\n", chan);
+    //printf("child chan=%i\n", chan);
 
     Morse m = Morse();
 
@@ -42,18 +42,19 @@ void * child(void *c) {
 
     char buf[256];
     while(1) {
-        printf("child waiting\n");
+        //printf("child waiting\n");
         memset(buf, 0, sizeof(buf));
         if (wait_n_read(chan, buf, sizeof(buf)-1) == -1) {
             printf("wait_n_read error\n");
         } else {
-            printf("child got %s\n", (char *)buf);
+            //printf("child got %s\n", (char *)buf);
 
             int length = strlen(buf);
             for(int i=0 ; i<length ; i++) {
                 const char *s = m.fromAsc(buf[i]);
                 if(!s[0]) continue;
-                printf("child playing %s\n", (char *)s);
+                //printf("child playing %c %s\n", buf[i], (char *)s);
+                printf(" Playing %c %s\n", buf[i], (char *)s);
 
                 int siglength = strlen(s);
                 for(int j=0 ; j<siglength ; j++) {
@@ -76,7 +77,7 @@ void * child(void *c) {
                 }
             }
         }
-        printf("child waiting ended. looping\n");
+        //printf("child waiting ended. looping\n");
     }
 }
 
@@ -101,7 +102,7 @@ int main() {
             char buf[16];
             sprintf(buf, "%c", key);
             write(chan[1], buf, strlen(buf));
-            printf("written to chan %i\n", chan[1]);
+            //printf("written to chan %i\n", chan[1]);
         }
         usleep(30000);
     }

@@ -6,7 +6,7 @@ const char *Morse::fromAsc(char c) {
     while(*p) {
         if(*p == c) {
             int idx = p-ascii;
-            printf("idx=%d\n", idx);
+            //printf("idx=%d\n", idx);
             return morse[idx];
         }
         p++;
