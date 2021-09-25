@@ -13,7 +13,7 @@ Obs: it was coded on Debian 10 (it will not work on Windows etc).
 
 Install lib dependencies:
 ```
-apt install libxcb-util0-dev lxcb-xtest0 portaudio19-dev
+apt install libxcb-util0-dev libxcb-xtest0 portaudio19-dev
 
 ```
 Then build it:
